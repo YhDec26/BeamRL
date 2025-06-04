@@ -1,8 +1,9 @@
 from functools import partial
 import gymnasium as gym
 import wandb
-import os  
-import requests  
+import os
+import argparse
+import requests
 from datetime import datetime
 
 from gymnasium.wrappers import (
@@ -23,6 +24,14 @@ from environement import EATransverseTuning
 from utils import FilterAction, save_config
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--output-dir",
+        default=os.environ.get("OUTPUT_DIR", "models"),
+        help="Directory to save training artifacts",
+    )
+    args = parser.parse_args()
+
     config = {
         
         "action_mode": "delta",
@@ -97,7 +106,7 @@ def main() -> None:
 
         
     }
-    train(config)
+    train(config, args.output_dir)
 
 if "WANDB_INITED" not in os.environ:
     os.environ["WANDB_INITED"] = "1"
@@ -106,7 +115,7 @@ else:
 
 os.environ['WANDB_INIT_TIMEOUT'] = '600'  
 
-def train(config: dict) -> None:
+def train(config: dict, output_dir: str) -> None:
 
     try:
         r = requests.get("https://api.wandb.ai", timeout=5)
@@ -191,14 +200,16 @@ def train(config: dict) -> None:
     wandb_callback = WandbCallback()
 
     model.learn(
-        total_timesteps=4_000_00,  
+        total_timesteps=4_000_00,
         callback=[eval_callback, wandb_callback]
     )
 
-    model.save(f"C:/Users/user/Desktop/RL×ACC/rl_for_beam_tuning-main/rl_for_beam_tuning-main/models/{wandb.run.name}/model")
+    model_dir = os.path.join(output_dir, wandb.run.name)
+    os.makedirs(model_dir, exist_ok=True)
+    model.save(os.path.join(model_dir, "model"))
     if config["normalize_observation"] or config["normalize_reward"]:
-        env.save(f"C:/Users/user/Desktop/RL×ACC/rl_for_beam_tuning-main/rl_for_beam_tuning-main/models/{wandb.run.name}/vec_normalize.pkl")
-    save_config(config, f"C:/Users/user/Desktop/RL×ACC/rl_for_beam_tuning-main/rl_for_beam_tuning-main/models/{wandb.run.name}/config")
+        env.save(os.path.join(model_dir, "vec_normalize.pkl"))
+    save_config(config, os.path.join(model_dir, "config"))
 
 def make_env(config: dict, record_video: bool = False) -> gym.Env:  
     cheetah_backend = EACheetahBackend(
