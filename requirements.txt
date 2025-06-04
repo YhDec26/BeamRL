@@ -1,0 +1,13 @@
+# Core dependencies
+gymnasium
+stable-baselines3
+torch
+wandb
+matplotlib
+numpy
+opencv-python
+pyyaml
+tqdm
+requests
+cheetah
+ocelot
