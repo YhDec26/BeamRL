@@ -1,5 +1,6 @@
 from functools import partial
-import os                                     
+import os
+import argparse
 import gymnasium as gym
 import torch
 import numpy as np
@@ -14,15 +15,27 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
 from backend import EACheetahBackend
 from environement import EATransverseTuning
-from utils import load_config                 
+from utils import load_config
 
-MODEL_PATH = r"C:\Users\user\Desktop\RL×ACC\rl_for_beam_tuning-main\rl_for_beam_tuning-main\models\offline_clapa_20250601_183837"
-NUM_EPISODES = 10            
-RECORD_VIDEO  = False        
+DEFAULT_MODEL_PATH = os.path.join("models", "latest")
 
 def main() -> None:
-    
-    config = load_config(os.path.join(MODEL_PATH, "config"))       
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--model-path",
+        default=os.environ.get("MODEL_PATH", DEFAULT_MODEL_PATH),
+        help="Path to a trained model directory",
+    )
+    parser.add_argument("--num-episodes", type=int, default=10)
+    parser.add_argument("--record-video", action="store_true")
+    args = parser.parse_args()
+
+    model_path = args.model_path
+    num_episodes = args.num_episodes
+    record_video = args.record_video
+
+    config = load_config(os.path.join(model_path, "config"))
     
     for k in ["incoming_values", "magnet_init_values", "target_beam_values"]:
         if isinstance(config.get(k), list):
@@ -33,26 +46,26 @@ def main() -> None:
     config["target_sigma_x_threshold"] = 100e-6
     config["target_sigma_y_threshold"] = 100e-6
     
-    env = create_eval_env(config)
-    model, env = load_model_and_env(MODEL_PATH, env)
-    evaluate_model(model, env, num_episodes=NUM_EPISODES)
+    env = create_eval_env(config, model_path, record_video)
+    model, env = load_model_and_env(model_path, env)
+    evaluate_model(model, env, num_episodes=num_episodes)
 
-def create_eval_env(config: dict) -> gym.Env:
+def create_eval_env(config: dict, model_path: str, record_video: bool) -> gym.Env:
     """根据训练时的配置创建评估环境"""
     env = DummyVecEnv([partial(make_env, config)])
 
-    vec_path = os.path.join(MODEL_PATH, "vec_normalize.pkl")        
+    vec_path = os.path.join(model_path, "vec_normalize.pkl")
     if os.path.exists(vec_path) and (
         config.get("normalize_observation") or config.get("normalize_reward")
     ):
-        env = VecNormalize.load(vec_path, env)                      
+        env = VecNormalize.load(vec_path, env)
         env.training = False
         env.norm_reward = False
 
-    if RECORD_VIDEO:
+    if record_video:
         env = RecordVideo(
             env,
-            video_folder=os.path.join(MODEL_PATH, "videos"),
+            video_folder=os.path.join(model_path, "videos"),
             episode_trigger=lambda x: x % 2 == 0,
         )
 
