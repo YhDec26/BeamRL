@@ -13,7 +13,7 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
 from backend import EACheetahBackend
-from environement import EATransverseTuning
+from environment import EATransverseTuning
 from utils import load_config                 
 
 MODEL_PATH = r"C:\Users\user\Desktop\RL×ACC\rl_for_beam_tuning-main\rl_for_beam_tuning-main\models\offline_clapa_20250601_183837"

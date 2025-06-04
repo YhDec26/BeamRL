@@ -19,7 +19,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNorm
 from wandb.integration.sb3 import WandbCallback
 
 from backend import EACheetahBackend
-from environement import EATransverseTuning
+from environment import EATransverseTuning
 from utils import FilterAction, save_config
 
 def main() -> None:

@@ -1,7 +1,5 @@
-import typing
 from functools import partial
 from typing import Optional
-import cv2
 import gymnasium as gym
 import numpy as np
 from gymnasium import spaces

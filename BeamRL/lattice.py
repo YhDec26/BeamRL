@@ -1,22 +1,16 @@
 from ocelot import (
     Aperture,
-    Cavity,
     Drift,
     Hcor,
-    Marker,
     Monitor,
     Quadrupole,
     SBend,
     Solenoid,
-    TDCavity,
-    Vcor,
 )
 
-# from cheetah import BPM, Drift, HorizontalCorrector, Segment, Dipole, Screen, Solenoid, Quadrupole, Aperture
 # import cheetah
 # import torch
 
-from cheetah import BPM
 
 # Drifts
 # drift_0.5 = Aperture(100)
