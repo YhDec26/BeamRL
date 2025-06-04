@@ -107,9 +107,7 @@ else:
 os.environ['WANDB_INIT_TIMEOUT'] = '600'  
 
 def train(config: dict) -> None:
-    """
-    训练主函数。自动判断 WandB 采用 online 还是 offline 模式。
-    """
+
     try:
         r = requests.get("https://api.wandb.ai", timeout=5)
         r.raise_for_status()
@@ -123,7 +121,7 @@ def train(config: dict) -> None:
     run_name = f"{run_mode}_{config.get('project', 'clapa')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     
     if os.environ.get("WANDB_MODE") != "disabled":
-        wandb.login(key="73096f6c4a7056e000ded363556c72c08efeaca4")
+        wandb.login(key="4d8a8w4das5d46as5")
     
     wandb.init(
         project="clapa",                        
