@@ -130,7 +130,7 @@ def train(config: dict, output_dir: str) -> None:
     run_name = f"{run_mode}_{config.get('project', 'clapa')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     
     if os.environ.get("WANDB_MODE") != "disabled":
-        wandb.login(key="4d8a8w4das5d46as5")
+        wandb.login(key=os.environ.get("WANDB_API_KEY"))
     
     wandb.init(
         project="clapa",                        
